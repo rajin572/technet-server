@@ -9,17 +9,35 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.euxm4cs.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dqndubz.mongodb.net/?retryWrites=true&w=majority`;
+
 const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
 });
 
 const run = async () => {
   try {
-    const db = client.db('tech-net');
+    const db = client.db('technet-server');
     const productCollection = db.collection('product');
+
+    // app.get('/products', async (req, res) => {
+    //   const { name } = req.query; // Get the search criteria from query parameters
+
+    //   const searchQuery = {};
+
+    //   if (name) {
+    //     searchQuery.name = { $regex: name }; // Case-insensitive search for title
+    //   }
+
+    //   const cursor = productCollection.find(searchQuery);
+    //   const products = await cursor.toArray();
+
+    //   res.send({ status: true, data: products });
+    // });
 
     app.get('/products', async (req, res) => {
       const cursor = productCollection.find({});
@@ -27,6 +45,7 @@ const run = async () => {
 
       res.send({ status: true, data: product });
     });
+
 
     app.post('/product', async (req, res) => {
       const product = req.body;
